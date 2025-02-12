@@ -11,19 +11,19 @@
 </template>
 
 <script>
-import { signIn } from '@/firebase';
+import { loginWithEmail } from "../services/authService";
 import { useRouter } from 'vue-router';
 import { ref } from "vue";
 export default {
     name: 'AppLogin',
     setup() {
-        const router = useRouter(); // Initialize the router
+        const router = useRouter();
         const email = ref('');
         const password = ref('');
         const errorMessage = ref('');
         const login = async () => {
             try {
-                await signIn(email.value, password.value);
+                await loginWithEmail(email.value, password.value);
                 await router.push('/chat'); // Redirect to chat on successful login
             } catch (error) {
                 console.error('Login Failed:', error);

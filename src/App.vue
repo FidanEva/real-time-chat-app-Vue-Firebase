@@ -1,14 +1,4 @@
 <template>
-    <header>
-      <h1 class="logo">Vue Chat App</h1>
-      <nav>
-        <router-link to="/chat">Chat</router-link>
-        <!-- Display login and logout links based on authentication status -->
-        <router-link v-if="!user" to="/login">Login</router-link>
-        <router-link v-if="!user" to="/signup">Sign Up</router-link>
-        <button v-if="user" @click="logout">Logout</button>
-      </nav>
-    </header>
     <main>
       <router-view />
     </main>
@@ -16,21 +6,21 @@
 
 <script>
 import { ref, onMounted } from 'vue';
-import { auth } from './firebase';
+import { auth } from './firebase/firebaseConfig';
 import {useRouter} from "vue-router";
 
 export default {
   name: 'App',
   setup() {
     const user = ref(null);
-    const router = useRouter(); // Initialize the router
-    // Check user login state
+    const router = useRouter();
+
     onMounted(() => {
       auth.onAuthStateChanged(u => {
         user.value = u;
       });
     });
-    // Logout method
+
     const logout = async () => {
       try {
         await auth.signOut();

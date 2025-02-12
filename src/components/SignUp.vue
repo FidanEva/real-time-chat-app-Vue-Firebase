@@ -11,22 +11,21 @@
     </div>
 </template>
 <script>
-import { signUp as FBSignUp } from '@/firebase';
+import { signUpWithEmail } from "../services/authService";
 import { useRouter } from "vue-router";
 import { ref } from "vue";
 import { updateProfile } from "firebase/auth";
 export default {
     setup() {
-        const router = useRouter(); // Initialize the router
+        const router = useRouter();
         const email = ref('');
         const password = ref('');
         const username = ref('');
         const errorMessage = ref('');
         const signUp = async () => {
             try {
-                const userCredential = await FBSignUp(email.value, password.value);
+                const userCredential = await signUpWithEmail(email.value, password.value);
                 const user = userCredential.user;
-                // Update the profile with the username
                 await updateProfile(user, {
                     displayName: username.value
                 });

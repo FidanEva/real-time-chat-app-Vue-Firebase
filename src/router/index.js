@@ -1,15 +1,12 @@
-import { createRouter, createWebHistory } from 'vue-router';
-import ChatRoom from '../components/ChatRoom.vue';
-import Login from '../components/Login.vue';
-import SignUp from '../components/SignUp.vue';
+import { createRouter, createWebHistory } from "vue-router";
+import routes from "@/router/routes";
+import middlewareBeforeEach from "@/router/middleware";
 
-const routes = [
-  { path: '/', component: ChatRoom },
-  { path: '/login', component: Login },
-  { path: '/signup', component: SignUp }
-];
-const router = createRouter({
+export const router = createRouter({
   history: createWebHistory(),
-  routes
+  routes,
 });
+
+router.beforeEach(middlewareBeforeEach);
+
 export default router;

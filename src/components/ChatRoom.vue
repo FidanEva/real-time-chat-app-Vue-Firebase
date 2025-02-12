@@ -1,72 +1,61 @@
 <template>
-    <div class="chat-room">
-        <section class="messages-container">
-            <ul class="messages-list">
-                <li v-for="message in messages" :key="message.id"
-                    :class="{ 'my-message': message.uid === currentUser, 'other-message': message.uid !== currentUser }"
-                    class="message">
-                    <div class="message-wrap">
-                        <div class="message-wrap-content">
-                            <p>
-                                {{ message.text }}
-                            </p>
-                            <small class="time">{{ message.createdAt?.toDate().toLocaleTimeString() }}</small>
-                        </div>
+  <div class="chat-room" v-if="currentUserVid && !authStore.loading">
+    <section class="messages-container">
+        <ul class="messages-list">
+            <li v-for="message in messages" :key="message.id" 
+                :class="{ 'my-message': message.uid === currentUserVid, 'other-message': message.uid !== currentUserVid }" class="message">
+                <div class="message-wrap">
+                    <div class="message-wrap-content">
+                        <p>{{ message.text }}</p>
+                        <small class="time">{{ new Date(message.createdAt.seconds * 1000).toLocaleTimeString() }}</small>
                     </div>
-                    <div class="conversation-name">
-                        {{ message.user }}
-                    </div>
-                </li>
-            </ul>
-        </section>
-        <form class="message-form" @submit.prevent="sendMessage">
-            <input v-model="newMessage" type="text" placeholder="Type your message here..." class="message-input" />
-            <button type="submit" class="send-button">Send</button>
-        </form>
-    </div>
+                </div>
+                <div class="conversation-name">{{ message.user }}</div>
+            </li>
+        </ul>
+    </section>
+    <form class="message-form" @submit.prevent="sendMessage">
+        <input v-model="newMessage" type="text" placeholder="Type your message here..." class="message-input" />
+        <button type="submit" class="send-button">Send</button>
+    </form>
+  </div>
+  <div v-else>
+    <p>Loading...</p>
+  </div>
 </template>
 
 <script>
-import { ref, onMounted } from 'vue';
-import { db, auth } from '@/firebase'; // Ensure db is properly exported as Firestore instance
-import { collection, query, orderBy, onSnapshot, addDoc, serverTimestamp } from 'firebase/firestore';
+import { ref, computed, watch } from "vue";
+import { useChatStore } from "../store/chatStore";
+import { useAuthStore } from "../store/authStore";
+
 export default {
-    setup() {
-        const messages = ref([]);
-        const newMessage = ref('');
-        // Reference to Firestore collection
-        const messagesCollection = collection(db, 'messages');
-        const messagesQuery = query(messagesCollection, orderBy('createdAt'));
-        // Real-time subscription to messages
-        onMounted(() => {
-            onSnapshot(messagesQuery, (snapshot) => {
-                messages.value = snapshot.docs.map(doc => ({
-                    id: doc.id,
-                    ...doc.data()
-                }));
-            });
-        });
-        // Function to send messages
-        const sendMessage = async () => {
-            if (newMessage.value.trim()) {
-                try {
-                    await addDoc(messagesCollection, {
-                        text: newMessage.value,
-                        uid: auth.currentUser.uid, // Saving UID of the sender
-                        user: auth.currentUser?.displayName || 'Anonymous',  // Use displayName
-                        createdAt: serverTimestamp()
-                    });
-                    newMessage.value = '';
-                } catch (error) {
-                    console.error('Error adding message: ', error);
-                }
-            }
-        };
-        const currentUser = auth.currentUser.uid;
-        return { messages, newMessage, currentUser, sendMessage };
-    }
+  setup() {
+    const chatStore = useChatStore();
+    const authStore = useAuthStore();
+    const newMessage = ref("");
+    const messages = computed(() => chatStore.messages);
+
+    const currentUserVid = computed(() => (authStore.user ? authStore.user.uid : null));
+
+    watch(() => authStore.user, (newUser) => {
+      if (newUser && !authStore.loading) {
+        chatStore.fetchMessages();
+      }
+    });
+
+    const sendMessage = () => {
+      if (newMessage.value.trim()) {
+        chatStore.sendMessage(authStore.user, newMessage.value);
+        newMessage.value = "";
+      }
+    };
+
+    return { currentUserVid, messages, newMessage, sendMessage, authStore };
+  }
 };
 </script>
+
 <style scoped>
 .chat-room {
     display: flex;
