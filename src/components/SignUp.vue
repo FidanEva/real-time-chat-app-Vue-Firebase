@@ -1,16 +1,69 @@
 <template>
-  <div class="signup-container">
-    <h1>Sign Up</h1>
-    <form @submit.prevent="signUp">
-      <input v-model="email" type="email" placeholder="Email" required />
-      <input v-model="password" type="password" placeholder="Password" required minlength="6" />
-      <input v-model="username" type="text" placeholder="Username" required />
-      <button type="submit" :disabled="loading">Sign Up</button>
-    </form>
-    <p v-if="errorMessage" style="color:red">{{ errorMessage }}</p>
-    <button @click="goToLogin">Go to Login</button>
+  <div class="container mt-5">
+    <div class="row justify-content-center">
+      <div class="col-md-6">
+        <h1 class="text-center mb-4">Sign Up</h1>
+        <form @submit.prevent="signUp">
+          <!-- Email Input -->
+          <div class="mb-3">
+            <input 
+              v-model="email" 
+              type="email" 
+              class="form-control" 
+              placeholder="Email" 
+              required 
+            />
+          </div>
+          
+          <!-- Password Input -->
+          <div class="mb-3">
+            <input 
+              v-model="password" 
+              type="password" 
+              class="form-control" 
+              placeholder="Password" 
+              required 
+              minlength="6" 
+            />
+          </div>
+
+          <!-- Username Input -->
+          <div class="mb-3">
+            <input 
+              v-model="username" 
+              type="text" 
+              class="form-control" 
+              placeholder="Username" 
+              required 
+            />
+          </div>
+
+          <!-- Submit Button -->
+          <div class="mb-3 text-center">
+            <button 
+              type="submit" 
+              class="btn btn-primary w-100" 
+              :disabled="loading"
+            >
+              Sign Up
+            </button>
+          </div>
+        </form>
+
+        <!-- Error Message -->
+        <p v-if="errorMessage" class="text-danger text-center">{{ errorMessage }}</p>
+
+        <!-- Go to Login Button -->
+        <div class="text-center mt-3">
+          <button @click="goToLogin" class="btn btn-link">Go to Login</button>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
+
+
+
 <script>
 import { useRouter } from 'vue-router';
 import { ref, computed, onMounted } from 'vue';
@@ -54,34 +107,3 @@ export default {
   }
 };
 </script>
-
-<style scoped>
-.signup-container {
-    max-width: 300px;
-    margin: 50px auto;
-    padding: 20px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-}
-
-input[type="email"],
-input[type="password"],
-input[type="text"] {
-    width: 100%;
-    padding: 8px;
-    margin: 10px 0;
-    box-sizing: border-box;
-}
-
-button {
-    width: 100%;
-    padding: 10px;
-    background-color: #4CAF50;
-    color: white;
-    border: none;
-    cursor: pointer;
-}
-
-button:hover {
-    background-color: #45a049;
-}
-</style>

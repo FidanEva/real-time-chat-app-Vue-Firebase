@@ -1,15 +1,56 @@
 <template>
-  <div class="login-container">
-    <h1>Login</h1>
-    <form @submit.prevent="login">
-      <input v-model="email" type="email" placeholder="Email" required />
-      <input v-model="password" type="password" placeholder="Password" required minlength="6" />
-      <button type="submit" :disabled="loading">Login</button>
-    </form>
-    <p v-if="errorMessage" style="color:red">{{ errorMessage }}</p>
-    <button @click="goToSignup">Go to Signup</button>
+  <div class="container mt-5">
+    <div class="row justify-content-center">
+      <div class="col-md-6">
+        <h1 class="text-center mb-4">Login</h1>
+        <form @submit.prevent="login">
+          <!-- Email Input -->
+          <div class="mb-3">
+            <input 
+              v-model="email" 
+              type="email" 
+              class="form-control" 
+              placeholder="Email" 
+              required 
+            />
+          </div>
+
+          <!-- Password Input -->
+          <div class="mb-3">
+            <input 
+              v-model="password" 
+              type="password" 
+              class="form-control" 
+              placeholder="Password" 
+              required 
+              minlength="6" 
+            />
+          </div>
+
+          <!-- Submit Button -->
+          <div class="mb-3 text-center">
+            <button 
+              type="submit" 
+              class="btn btn-primary w-100" 
+              :disabled="loading"
+            >
+              Login
+            </button>
+          </div>
+        </form>
+
+        <!-- Error Message -->
+        <p v-if="errorMessage" class="text-danger text-center">{{ errorMessage }}</p>
+
+        <!-- Go to Signup Button -->
+        <div class="text-center mt-3">
+          <button @click="goToSignup" class="btn btn-link">Go to Signup</button>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
+
 <script>
 import { useRouter } from 'vue-router';
 import { ref, computed, onMounted } from 'vue';
@@ -49,33 +90,3 @@ export default {
   }
 };
 </script>
-
-<style scoped>
-.login-container {
-    max-width: 300px;
-    margin: 50px auto;
-    padding: 20px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-}
-
-input[type="email"],
-input[type="password"] {
-    width: 100%;
-    padding: 8px;
-    margin: 10px 0;
-    box-sizing: border-box;
-}
-
-button {
-    width: 100%;
-    padding: 10px;
-    background-color: #4CAF50;
-    color: white;
-    border: none;
-    cursor: pointer;
-}
-
-button:hover {
-    background-color: #45a049;
-}
-</style>

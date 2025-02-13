@@ -1,12 +1,26 @@
 <template>
-<header>
-    <h1>Main Layout</h1>
-    <button @click="logOut" type="sumbit">Log out</button>
-</header>
-<main>
-    <router-view />
-</main>
+  <div>
+    <!-- Header Section -->
+    <header class="bg-primary text-white py-3 mb-4">
+      <div class="container d-flex justify-content-between align-items-center">
+        <h1 class="mb-0">Main Layout</h1>
+        <button 
+          @click="logOut" 
+          type="submit" 
+          class="btn btn-outline-light"
+        >
+          Log out
+        </button>
+      </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container">
+      <router-view />
+    </main>
+  </div>
 </template>
+
 
 <script>
 import { useAuthStore } from '@/store/authStore';
