@@ -1,39 +1,9 @@
 <template>
-    <main>
-      <router-view />
-    </main>
+  <main>
+    <router-view />
+  </main>
 </template>
 
-<script>
-import { ref, onMounted } from 'vue';
-import { auth } from './firebase/firebaseConfig';
-import {useRouter} from "vue-router";
-
-export default {
-  name: 'App',
-  setup() {
-    const user = ref(null);
-    const router = useRouter();
-
-    onMounted(() => {
-      auth.onAuthStateChanged(u => {
-        user.value = u;
-      });
-    });
-
-    const logout = async () => {
-      try {
-        await auth.signOut();
-        await router.push('/');
-      } catch (error) {
-        console.error('Logout Failed:', error);
-        alert('Logout failed. Please try again.');
-      }
-    };
-    return { user, logout };
-  }
-};
-</script>
 <style>
 body{
   padding: 0;

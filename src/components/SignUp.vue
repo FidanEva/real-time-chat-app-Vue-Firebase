@@ -1,44 +1,60 @@
 <template>
-    <div class="signup-container">
-        <h1>Sign Up</h1>
-        <form @submit.prevent="signUp">
-            <input v-model="email" type="email" placeholder="Email" required />
-            <input v-model="password" type="password" placeholder="Password" required minlength="6" />
-            <input v-model="username" type="text" placeholder="Username" required>
-            <button type="submit">Sign Up</button>
-        </form>
-        <p v-if="errorMessage" style="color:red"> {{ errorMessage }} </p>
-    </div>
+  <div class="signup-container">
+    <h1>Sign Up</h1>
+    <form @submit.prevent="signUp">
+      <input v-model="email" type="email" placeholder="Email" required />
+      <input v-model="password" type="password" placeholder="Password" required minlength="6" />
+      <input v-model="username" type="text" placeholder="Username" required />
+      <button type="submit" :disabled="loading">Sign Up</button>
+    </form>
+    <p v-if="errorMessage" style="color:red">{{ errorMessage }}</p>
+    <button @click="goToLogin">Go to Login</button>
+  </div>
 </template>
 <script>
-import { signUpWithEmail } from "../services/authService";
-import { useRouter } from "vue-router";
-import { ref } from "vue";
-import { updateProfile } from "firebase/auth";
+import { useRouter } from 'vue-router';
+import { ref, computed, onMounted } from 'vue';
+import { updateProfile } from 'firebase/auth';
+import { useAuthStore } from '@/store/authStore';
+
 export default {
-    setup() {
-        const router = useRouter();
-        const email = ref('');
-        const password = ref('');
-        const username = ref('');
-        const errorMessage = ref('');
-        const signUp = async () => {
-            try {
-                const userCredential = await signUpWithEmail(email.value, password.value);
-                const user = userCredential.user;
-                await updateProfile(user, {
-                    displayName: username.value
-                });
-                await router.push('/chat');
-            } catch (error) {
-                console.error('Error signing up:', error);
-                errorMessage.value = error.message;
-            }
-        };
-        return { email, password, username, errorMessage, signUp };
-    }
+  name: 'AppSignup',
+  setup() {
+    const router = useRouter();
+    const authStore = useAuthStore();
+    const email = ref('');
+    const password = ref('');
+    const username = ref('');
+    const errorMessage = ref('');
+    const loading = computed(() => authStore.loading);
+
+    onMounted(() => {
+      const userFromSession = sessionStorage.getItem('userSession');
+      if (userFromSession) {
+        router.push('/chat');
+      }
+    });
+
+    const signUp = async () => {
+      try {
+        const userCredential = await authStore.signUpWithEmail(email.value, password.value);
+        const user = userCredential.user;
+        await updateProfile(user, { displayName: username.value });
+        await router.push('/chat');
+      } catch (error) {
+        errorMessage.value = error.message;
+      }
+    };
+
+    const goToLogin = () => {
+      router.push('/login');
+    };
+
+    return { email, password, username, errorMessage, loading, signUp, goToLogin };
+  }
 };
 </script>
+
 <style scoped>
 .signup-container {
     max-width: 300px;

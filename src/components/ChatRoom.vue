@@ -1,45 +1,61 @@
 <template>
-  <div class="chat-room" v-if="currentUserVid && !authStore.loading">
+  <div v-if="authStore.loading">
+    <p>Loading...</p>
+  </div>
+  <div class="chat-room" v-else-if="currentUserVid">
     <section class="messages-container">
-        <ul class="messages-list">
-            <li v-for="message in messages" :key="message.id" 
-                :class="{ 'my-message': message.uid === currentUserVid, 'other-message': message.uid !== currentUserVid }" class="message">
-                <div class="message-wrap">
-                    <div class="message-wrap-content">
-                        <p>{{ message.text }}</p>
-                        <small class="time">{{ new Date(message.createdAt.seconds * 1000).toLocaleTimeString() }}</small>
-                    </div>
-                </div>
-                <div class="conversation-name">{{ message.user }}</div>
-            </li>
-        </ul>
+      <ul class="messages-list">
+        <li v-for="message in messages" :key="message.id" 
+            :class="{ 'my-message': message.uid === currentUserVid, 'other-message': message.uid !== currentUserVid }" 
+            class="message">
+          <div class="message-wrap">
+            <div class="message-wrap-content">
+              <p>{{ message.text }}</p>
+              <small class="time">{{ new Date(message.createdAt.seconds * 1000).toLocaleTimeString() }}</small>
+            </div>
+          </div>
+          <div class="conversation-name">{{ message.user }}</div>
+        </li>
+      </ul>
     </section>
     <form class="message-form" @submit.prevent="sendMessage">
-        <input v-model="newMessage" type="text" placeholder="Type your message here..." class="message-input" />
-        <button type="submit" class="send-button">Send</button>
+      <input v-model="newMessage" type="text" placeholder="Type your message here..." class="message-input" />
+      <button type="submit" class="send-button">Send</button>
     </form>
   </div>
   <div v-else>
-    <p>Loading...</p>
+    <p>You are not logged in.</p>
   </div>
 </template>
-
 <script>
-import { ref, computed, watch } from "vue";
+import { ref, computed, watch, onMounted } from "vue";
 import { useChatStore } from "../store/chatStore";
 import { useAuthStore } from "../store/authStore";
+import { useRouter } from 'vue-router';
 
 export default {
   setup() {
     const chatStore = useChatStore();
     const authStore = useAuthStore();
+    const router = useRouter();
     const newMessage = ref("");
     const messages = computed(() => chatStore.messages);
 
     const currentUserVid = computed(() => (authStore.user ? authStore.user.uid : null));
 
     watch(() => authStore.user, (newUser) => {
-      if (newUser && !authStore.loading) {
+      if (!newUser) {
+        router.push('/login');
+      } else {
+        chatStore.fetchMessages();
+      }
+    });
+
+    onMounted(() => {
+      const userFromSession = sessionStorage.getItem('userSession');
+      if (!userFromSession) {
+        router.push('/login');
+      } else {
         chatStore.fetchMessages();
       }
     });

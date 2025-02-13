@@ -7,7 +7,11 @@ export const useChatStore = defineStore("chat", {
       sendMessage(user, text);
     },
     fetchMessages() {
-      subscribeToMessages(messages => this.messages = messages);
+      try{
+        subscribeToMessages(messages => this.messages = messages);
+      }catch(error){
+          console.error('Error fetching messages:', error);
+      }
     }
   }
 });
