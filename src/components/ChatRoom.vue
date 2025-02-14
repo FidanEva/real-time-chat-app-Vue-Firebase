@@ -67,7 +67,8 @@ export default {
 
     onMounted(() => {
       const userFromSession = sessionStorage.getItem('userSession');
-      if (!userFromSession) {
+      console.log(userFromSession);
+      if (!authStore.user) {
         router.push('/login');
       } else {
         chatStore.fetchMessages();

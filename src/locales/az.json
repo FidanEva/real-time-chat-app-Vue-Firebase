@@ -1,0 +1,9 @@
+{
+    "login": {
+        "title": "Daxil ol",
+        "username": "Istifadəçi adı",
+        "usernameplaceholder": "Istifadəçi adınızı daxil edin",
+        "password": "Şifrə",
+        "passwordplaceholder": "Şifrənizi daxil edin"
+    }
+}

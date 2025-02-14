@@ -2,7 +2,7 @@
   <div class="container mt-5">
     <div class="row justify-content-center">
       <div class="col-md-6">
-        <h1 class="text-center mb-4">Login</h1>
+        <h1 class="text-center mb-4">{{ $t("login.title") }}</h1>
         <form @submit.prevent="login">
           <!-- Email Input -->
           <div class="mb-3">
@@ -68,7 +68,8 @@ export default {
 
     onMounted(() => {
       const userFromSession = sessionStorage.getItem('userSession');
-      if (userFromSession) {
+      console.log(userFromSession);
+      if (authStore.user) {
         router.push('/chat');
       }
     });
